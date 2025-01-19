@@ -1,7 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 from google.cloud import speech
 from google.cloud import texttospeech
-import pyttsx3
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
