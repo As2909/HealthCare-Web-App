@@ -21,6 +21,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 # Google Gemini API Key
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 logging.info(f"GEMINI_API_KEY: {os.getenv('GEMINI_API_KEY')}")
+logging.info(f"All environment variables: {os.environ}")
 
 # Load Google Credentials
 try:
@@ -120,6 +121,8 @@ def speak_text():
     except Exception as e:
         logging.error(f"Error with speech synthesis: {str(e)}")
         return jsonify({'error': f'Error with speech synthesis: {str(e)}'}), 500
+
+logging.info(f"Running in environment: {os.getenv('VERCEL_ENV')}")
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5000)
