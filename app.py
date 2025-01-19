@@ -4,9 +4,10 @@ import pyttsx3
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
+import json
 
 # Initialize Flask app
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", template_folder="templates")
 
 # Load environment variables
 load_dotenv()
@@ -14,8 +15,12 @@ load_dotenv()
 # Google Gemini API Key
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
+# Load JSON credentials from an environment variable
+credentials_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+with open("google_credentials.json", "w") as f:
+    f.write(credentials_json)
 # Google Speech API Key
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "google_credentials.json"
 
 # Speech to Text API client setup (Google)
 client = speech.SpeechClient()
@@ -87,4 +92,4 @@ def speak_text():
         return jsonify({'error': f'Error with speech synthesis: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)
