@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Translation App</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Healthcare Translation App</h1>
+
+        <!-- Language Selection -->
+        <div class="language-selection">
+            <label for="sourceLang">Source Language:</label>
+            <select id="sourceLang">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="hi">Hindi</option>
+                <!-- Add more languages as needed -->
+            </select>
+        </div>
+
+        <div class="language-selection">
+            <label for="targetLang">Target Language:</label>
+            <select id="targetLang">
+                <option value="es">Spanish</option>
+                <option value="en">English</option>
+                <option value="fr">French</option>
+                <option value="hi">Hindi</option>
+                <!-- Add more languages as needed -->
+            </select>
+        </div>
+
+        <!-- Speech-to-Text Section -->
+        <div>
+            <h3>Speak to Translate</h3>
+            <button id="startSpeechBtn">Start Speaking</button>
+            <p id="speechStatus">Status: Waiting for input...</p>
+        </div>
+
+        <!-- Dual Transcript Display -->
+        <div class="transcript">
+            <h3>Original Text</h3>
+            <p id="originalTextDisplay"></p>
+            <h3>Translated Text</h3>
+            <p id="translatedTextDisplay"></p>
+        </div>
+
+        <!-- Speak Translated Text -->
+        <button id="speakBtn" style="display:none;">Speak Translated Text</button>
+        <audio id="audioPlayback" controls></audio>
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+Flask
+google-cloud-speech
+pyttsx3
+google-generativeai
+python-dotenv

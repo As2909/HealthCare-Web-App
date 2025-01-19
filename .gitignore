@@ -1,0 +1,22 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+myenv/
+
+# Logs
+*.log
+
+# Google Cloud credentials
+*.json
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Translated Audio
+*.mp3
