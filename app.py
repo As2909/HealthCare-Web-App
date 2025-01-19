@@ -20,6 +20,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 # Google Gemini API Key
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+logging.info(f"GEMINI_API_KEY: {os.getenv('GEMINI_API_KEY')}")
 
 # Load Google Credentials
 try:
