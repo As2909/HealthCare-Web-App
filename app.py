@@ -14,11 +14,11 @@ app = Flask(__name__, static_folder="static", template_folder="templates")
 load_dotenv()
 
 # Google Gemini API Key
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 
 # Get the Google credentials from the environment variable
-google_credentials = os.environ.get("GOOGLE_CREDENTIALS")
+google_credentials = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 if not google_credentials:
     raise ValueError("Missing GOOGLE_CREDENTIALS environment variable")
 
