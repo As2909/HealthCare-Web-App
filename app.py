@@ -15,15 +15,19 @@ load_dotenv()
 # Google Gemini API Key
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-# Load JSON credentials from an environment variable
-credentials_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
-with open("google_credentials.json", "w") as f:
-    f.write(credentials_json)
-# Google Speech API Key
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "google_credentials.json"
 
-# Speech to Text API client setup (Google)
-client = speech.SpeechClient()
+# Get the Google credentials from the environment variable
+google_credentials = os.environ.get("GOOGLE_CREDENTIALS")
+if not google_credentials:
+    raise ValueError("Missing GOOGLE_CREDENTIALS environment variable")
+
+# Decode the Base64-encoded credentials
+credentials_dict = json.loads(
+    base64.b64decode(google_credentials).decode("utf-8")
+)
+
+# Initialize the Google Cloud client using the credentials
+client = speech.SpeechClient.from_service_account_info(credentials_dict)
 
 # Initialize text-to-speech engine
 engine = pyttsx3.init()
