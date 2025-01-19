@@ -30,9 +30,6 @@ credentials_dict = json.loads(
 # Initialize the Google Cloud client using the credentials
 client = speech.SpeechClient.from_service_account_info(credentials_dict)
 
-# Initialize text-to-speech engine
-engine = pyttsx3.init()
-
 # Set up the model for content generation and translation
 generation_config = {
     "temperature": 0.2,
@@ -81,6 +78,9 @@ def translate():
             return jsonify({'error': 'Translation failed, please try again.'}), 500
     except Exception as e:
         return jsonify({'error': f'Error during translation: {str(e)}'}), 500
+
+# Initialize Google Cloud Text-to-Speech client
+tts_client = texttospeech.TextToSpeechClient()
 
 @app.route('/speak', methods=['POST'])
 def speak_text():
