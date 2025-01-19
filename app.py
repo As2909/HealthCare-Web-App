@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 from google.cloud import speech
+from google.cloud import texttospeech
 import pyttsx3
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -90,9 +91,26 @@ def speak_text():
         return jsonify({'error': 'No text provided for speech synthesis'}), 400
 
     try:
-        engine.save_to_file(translated_text, 'static/translated_audio.mp3')
-        engine.runAndWait()
+        # Set up the text-to-speech request
+        synthesis_input = texttospeech.SynthesisInput(text=translated_text)
+        voice = texttospeech.VoiceSelectionParams(
+            language_code="en-US", ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
+        )
+        audio_config = texttospeech.AudioConfig(
+            audio_encoding=texttospeech.AudioEncoding.MP3
+        )
+
+        # Call the API to synthesize the speech
+        response = tts_client.synthesize_speech(
+            input=synthesis_input, voice=voice, audio_config=audio_config
+        )
+
+        # Save the audio file to static folder
+        with open('static/translated_audio.mp3', 'wb') as out:
+            out.write(response.audio_content)
+
         return jsonify({'message': 'Audio generated successfully'}), 200
+
     except Exception as e:
         return jsonify({'error': f'Error with speech synthesis: {str(e)}'}), 500
 
