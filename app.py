@@ -1,34 +1,45 @@
+import os
+import base64
+import tempfile
+import logging
 from flask import Flask, render_template, jsonify, request
-from google.cloud import speech
-from google.cloud import texttospeech
+from google.cloud import speech, texttospeech
+from google.oauth2 import service_account
 import google.generativeai as genai
 from dotenv import load_dotenv
-import os
-import json
-import base64
 
 # Initialize Flask app
 app = Flask(__name__, static_folder="static", template_folder="templates")
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
 # Load environment variables
 load_dotenv()
 
+# Set up logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 # Google Gemini API Key
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
+# Load Google Credentials
+try:
+    google_credentials = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    if not google_credentials:
+        raise ValueError("Missing GOOGLE_APPLICATION_CREDENTIALS environment variable")
 
-# Get the Google credentials from the environment variable
-google_credentials = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-if not google_credentials:
-    raise ValueError("Missing GOOGLE_CREDENTIALS environment variable")
+    decoded_credentials = base64.b64decode(google_credentials).decode("utf-8")
 
-# Decode the Base64-encoded credentials
-credentials_dict = json.loads(
-    base64.b64decode(google_credentials).decode("utf-8")
-)
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as temp_file:
+        temp_file.write(decoded_credentials.encode("utf-8"))
+        temp_credentials_path = temp_file.name
 
-# Initialize the Google Cloud client using the credentials
-client = speech.SpeechClient.from_service_account_info(credentials_dict)
+    credentials = service_account.Credentials.from_service_account_file(temp_credentials_path)
+    speech_client = speech.SpeechClient(credentials=credentials)
+    tts_client = texttospeech.TextToSpeechClient(credentials=credentials)
+    logging.info("Google Cloud clients initialized successfully.")
+finally:
+    if temp_credentials_path and os.path.exists(temp_credentials_path):
+        os.remove(temp_credentials_path)
 
 # Set up the model for content generation and translation
 generation_config = {
@@ -39,7 +50,7 @@ generation_config = {
 }
 
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",  # Set the model 
+    model_name="gemini-1.5-flash",  # Set the model
     generation_config=generation_config,
 )
 
@@ -48,9 +59,9 @@ def translate_text(text, source_language, target_language):
     prompt = f"Translate the following medical context text from {source_language} to {target_language}: \"{text}\""
     try:
         response = model.generate_content(prompt)
-        return response.text.strip()  # Get the translated text
+        return response.text.strip()
     except Exception as e:
-        print(f"Error translating text: {str(e)}")
+        logging.error(f"Error translating text: {str(e)}")
         return None
 
 @app.route('/')
@@ -71,16 +82,14 @@ def translate():
 
     try:
         translated_text = translate_text(text, source_lang, target_lang)
-        
+
         if translated_text:
             return jsonify({'translated_text': translated_text}), 200
         else:
             return jsonify({'error': 'Translation failed, please try again.'}), 500
     except Exception as e:
+        logging.error(f"Error during translation: {str(e)}")
         return jsonify({'error': f'Error during translation: {str(e)}'}), 500
-
-# Initialize Google Cloud Text-to-Speech client
-tts_client = texttospeech.TextToSpeechClient()
 
 @app.route('/speak', methods=['POST'])
 def speak_text():
@@ -90,7 +99,6 @@ def speak_text():
         return jsonify({'error': 'No text provided for speech synthesis'}), 400
 
     try:
-        # Set up the text-to-speech request
         synthesis_input = texttospeech.SynthesisInput(text=translated_text)
         voice = texttospeech.VoiceSelectionParams(
             language_code="en-US", ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
@@ -99,18 +107,17 @@ def speak_text():
             audio_encoding=texttospeech.AudioEncoding.MP3
         )
 
-        # Call the API to synthesize the speech
         response = tts_client.synthesize_speech(
             input=synthesis_input, voice=voice, audio_config=audio_config
         )
 
-        # Save the audio file to static folder
-        with open('static/translated_audio.mp3', 'wb') as out:
+        audio_file_path = 'static/translated_audio.mp3'
+        with open(audio_file_path, 'wb') as out:
             out.write(response.audio_content)
 
-        return jsonify({'message': 'Audio generated successfully'}), 200
-
+        return jsonify({'message': 'Audio generated successfully', 'audio_url': audio_file_path}), 200
     except Exception as e:
+        logging.error(f"Error with speech synthesis: {str(e)}")
         return jsonify({'error': f'Error with speech synthesis: {str(e)}'}), 500
 
 if __name__ == '__main__':
