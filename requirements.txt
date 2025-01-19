@@ -1,8 +1,7 @@
 Flask
 google-cloud-speech
-pyttsx3
 google-generativeai
 python-dotenv
-gunicorn
 google-cloud-texttospeech
-
+google-auth
+google-auth-oauthlib
