@@ -5,6 +5,7 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 import json
+import base64
 
 # Initialize Flask app
 app = Flask(__name__, static_folder="static", template_folder="templates")
