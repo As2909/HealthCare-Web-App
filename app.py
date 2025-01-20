@@ -126,10 +126,15 @@ def speak_text():
         response = tts_client.synthesize_speech(
             input=synthesis_input, voice=voice, audio_config=audio_config
         )
-
-        audio_file_path = 'static/translated_audio.mp3'
-        with open(audio_file_path, 'wb') as out:
-            out.write(response.audio_content)
+        # Serve audio file directly
+        audio_stream = io.BytesIO(response.audio_content)
+        audio_stream.seek(0)
+        return send_file(
+            audio_stream,
+            mimetype="audio/mpeg",
+            as_attachment=False,
+            download_name="translated_audio.mp3"
+        )
 
         return jsonify({'message': 'Audio generated successfully', 'audio_url': audio_file_path}), 200
     except Exception as e:
