@@ -67,7 +67,7 @@ model = genai.GenerativeModel(
 
 # Function to translate text
 def translate_text(text, source_language, target_language):
-    prompt = f"Translate the following medical context text from {source_language} to {target_language}: \"{text}\""
+    prompt = f"Translate the following text from {source_language} to {target_language}, ensuring only the translated content is provided without explanations or additional context: \"{text}\""
     try:
         response = model.generate_content(prompt)
         return response.text.strip()
