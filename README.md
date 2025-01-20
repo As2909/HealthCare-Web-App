@@ -1,28 +1,44 @@
-# Healthcare Translation Web App with Generative AI  
+# Healthcare Translation Web App with Generative AI
 
-A **web-based prototype** that enables **real-time, multilingual translation** between patients and healthcare providers. It includes functionalities such as voice-to-text conversion, real-time translation, and audio playback, tailored specifically for medical interactions.  
-
----
-
-## **Features**
-- **Voice-to-Text Conversion:** Converts spoken input into text using Google Cloud Speech-to-Text API, optimized for medical terminology.
-- **Real-Time Translation:** Translates input text into the desired language with context-specific accuracy using Google Generative AI.
-- **Audio Playback:** Provides translated text as audio playback using the `pyttsx3` library.
-- **Mobile-First Design:** Fully responsive web application for use on mobile and desktop devices.
+This is a Flask-based web application designed to facilitate real-time multilingual communication between patients and healthcare providers. The app enables text translation, text-to-speech (TTS) synthesis, and real-time interaction using Generative AI and Google Cloud services.
 
 ---
 
-## **Technologies Used**
-- **Frontend:**
-  - HTML5, CSS3, JavaScript
+## Features
+
+- **Text Translation:** Real-time, context-sensitive translations using Google Gemini AI.
+- **Text-to-Speech (TTS):** Converts translated text to speech, ensuring accessibility and ease of understanding.
+- **Multilingual Support:** Supports multiple languages for seamless communication.
+- **Web-Based Interface:** User-friendly interface with mobile-first design.
+- **Secure API Integration:** All keys and credentials are securely managed via environment variables.
+
+---
+
+## Technology Stack
+
 - **Backend:**
-  - Python (Flask framework)
-- **APIs:**
+  - Python 3.9+
+  - Flask
+  - Google Generative AI (`google.generativeai`)
+  - Google Cloud Text-to-Speech API
   - Google Cloud Speech-to-Text API
-  - Google Generative AI (Gemini)
-- **Other Tools:**
-  - `pyttsx3` for text-to-speech synthesis
-  - `.env` for secure API key management
+
+- **Frontend:**
+  - HTML/CSS/JavaScript (Static files served via Flask)
+
+- **Deployment:**
+  - Compatible with platforms like Vercel, Heroku, or any server supporting Flask.
+
+---
+
+## Installation and Setup
+
+### Prerequisites
+- Python 3.9 or higher
+- A Google Cloud project with enabled Speech-to-Text and Text-to-Speech APIs
+- Environment variables:
+  - `GEMINI_API_KEY_BASE64`: Base64-encoded Google Gemini API key
+  - `GOOGLE_APPLICATION_CREDENTIALS`: Base64-encoded Google service account key JSON
 
 ---
 
