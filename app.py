@@ -2,6 +2,7 @@ import os
 import base64
 import tempfile
 import logging
+import io
 from flask import Flask, render_template, jsonify, request
 from google.cloud import speech, texttospeech
 from google.oauth2 import service_account
