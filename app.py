@@ -138,8 +138,6 @@ def speak_text():
             as_attachment=False,
             download_name="translated_audio.mp3"
         )
-
-        return jsonify({'message': 'Audio generated successfully', 'audio_url': audio_file_path}), 200
     except Exception as e:
         logging.error(f"Error with speech synthesis: {str(e)}")
         return jsonify({'error': f'Error with speech synthesis: {str(e)}'}), 500
