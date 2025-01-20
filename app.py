@@ -144,7 +144,5 @@ def speak_text():
         logging.error(f"Error with speech synthesis: {str(e)}")
         return jsonify({'error': f'Error with speech synthesis: {str(e)}'}), 500
 
-logging.info(f"Running in environment: {os.getenv('VERCEL_ENV')}")
-
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5000)
