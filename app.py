@@ -18,10 +18,19 @@ load_dotenv()
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# Google Gemini API Key
-genai.configure(api_key="AIzaSyCQKo58MdNyx5y8MqHSy9LGNfD6GLSPpg4")
-logging.info(f"GEMINI_API_KEY: {os.getenv('GEMINI_API_KEY')}")
-logging.info(f"All environment variables: {os.environ}")
+# Decode the Base64-encoded GEMINI API key
+encoded_key = os.getenv("GEMINI_API_KEY_BASE64")
+if not encoded_key:
+    raise ValueError("Missing GEMINI_API_KEY_BASE64 environment variable")
+
+try:
+    decoded_api_key = base64.b64decode(encoded_key).decode()
+except Exception as e:
+    logging.error(f"Failed to decode API key: {e}")
+    raise
+    
+# Google Decoded Gemini API Key
+genai.configure(api_key=decoded_api_key)
 
 # Load Google Credentials
 try:
