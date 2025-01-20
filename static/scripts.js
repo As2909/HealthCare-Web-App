@@ -66,13 +66,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 text: translatedText
             })
         })
-        .then(response => response.blob()) // Get the audio blob directly
-        .then(blob => {
-            const audioUrl = URL.createObjectURL(blob); // Create an object URL for the audio blob
-            audioPlayback.src = audioUrl; // Set the source to the new audio URL
-            audioPlayback.play(); // Play the audio
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                audioPlayback.src = '/static/translated_audio.mp3';
+                audioPlayback.play();
+            }
         })
         .catch(error => {
             console.log('Error during speech synthesis:', error);
         });
     });
+});
