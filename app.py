@@ -19,7 +19,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Google Gemini API Key
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+genai.configure(api_key="AIzaSyCQKo58MdNyx5y8MqHSy9LGNfD6GLSPpg4")
 logging.info(f"GEMINI_API_KEY: {os.getenv('GEMINI_API_KEY')}")
 logging.info(f"All environment variables: {os.environ}")
 
