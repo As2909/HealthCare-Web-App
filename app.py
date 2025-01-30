@@ -26,31 +26,35 @@ if not encoded_key:
     raise ValueError("Missing GEMINI_API_KEY_BASE64 environment variable")
 
 try:
+    # Decode the API key for use with the generative AI model
     decoded_api_key = base64.b64decode(encoded_key).decode()
 except Exception as e:
     logging.error(f"Failed to decode API key: {e}")
     raise
-    
-# Google Decoded Gemini API Key
+
+# Configure the generative AI model with the decoded API key
 genai.configure(api_key=decoded_api_key)
 
-# Load Google Credentials
+# Load Google Cloud credentials
 try:
     google_credentials = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
     if not google_credentials:
         raise ValueError("Missing GOOGLE_APPLICATION_CREDENTIALS environment variable")
 
+    # Decode the credentials and write them to a temporary file
     decoded_credentials = base64.b64decode(google_credentials).decode("utf-8")
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as temp_file:
         temp_file.write(decoded_credentials.encode("utf-8"))
         temp_credentials_path = temp_file.name
 
+    # Initialize Google Cloud clients for speech and text-to-speech
     credentials = service_account.Credentials.from_service_account_file(temp_credentials_path)
     speech_client = speech.SpeechClient(credentials=credentials)
     tts_client = texttospeech.TextToSpeechClient(credentials=credentials)
     logging.info("Google Cloud clients initialized successfully.")
 finally:
+    # Clean up the temporary credentials file
     if temp_credentials_path and os.path.exists(temp_credentials_path):
         os.remove(temp_credentials_path)
 
@@ -62,13 +66,24 @@ generation_config = {
     "max_output_tokens": 8192,
 }
 
+# Initialize the generative AI model
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",  # Set the model
+    model_name="gemini-1.5-flash",  # Specify the model name
     generation_config=generation_config,
 )
 
-# Function to translate text
 def translate_text(text, source_language, target_language):
+    """
+    Translate text from a source language to a target language using a generative AI model.
+
+    Args:
+        text (str): The text to be translated.
+        source_language (str): The language code of the source text.
+        target_language (str): The language code of the target text.
+
+    Returns:
+        str: The translated text, or None if an error occurs.
+    """
     prompt = (
         f"You are a medical translator facilitating communication between patients and healthcare providers. "
         f"Your task is to provide accurate, context-sensitive translations of medical phrases, ensuring clarity and precision. "
@@ -84,10 +99,24 @@ def translate_text(text, source_language, target_language):
 
 @app.route('/')
 def index():
+    """
+    Render the main HTML page.
+
+    Returns:
+        Response: The rendered HTML page.
+    """
     return render_template('index.html')
 
 @app.route('/translate', methods=['POST'])
 def translate():
+    """
+    Handle translation requests.
+
+    Expects JSON data with 'text', 'source_lang', and 'target_lang' keys.
+
+    Returns:
+        Response: JSON response with translated text or an error message.
+    """
     text = request.json.get('text')
     source_lang = request.json.get('source_lang')
     target_lang = request.json.get('target_lang')
@@ -111,6 +140,14 @@ def translate():
 
 @app.route('/speak', methods=['POST'])
 def speak_text():
+    """
+    Convert translated text to speech and return an audio file.
+
+    Expects JSON data with 'text' key.
+
+    Returns:
+        Response: Audio file or an error message.
+    """
     translated_text = request.json.get('text')
 
     if not translated_text:
@@ -142,4 +179,5 @@ def speak_text():
         return jsonify({'error': f'Error with speech synthesis: {str(e)}'}), 500
 
 if __name__ == '__main__':
+    # Run the Flask app
     app.run(debug=True, host="0.0.0.0", port=5000)
