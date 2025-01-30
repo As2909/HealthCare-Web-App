@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const startSpeechBtn = document.getElementById('startSpeechBtn');
+    const stopSpeechBtn = document.getElementById('stopSpeechBtn');
     const speechStatus = document.getElementById('speechStatus');
     const originalTextDisplay = document.getElementById('originalTextDisplay');
     const translatedTextDisplay = document.getElementById('translatedTextDisplay');
@@ -17,6 +18,16 @@ document.addEventListener('DOMContentLoaded', function () {
     startSpeechBtn.addEventListener('click', function () {
         recognition.start();
         speechStatus.textContent = 'Status: Listening...';
+        startSpeechBtn.style.display = 'none';
+        stopSpeechBtn.style.display = 'inline-block';
+    });
+
+    // Stop Speech Recognition
+    stopSpeechBtn.addEventListener('click', function () {
+        recognition.stop();
+        speechStatus.textContent = 'Status: Stopped';
+        startSpeechBtn.style.display = 'inline-block';
+        stopSpeechBtn.style.display = 'none';
     });
 
     // When speech is recognized, display original text and translate it
